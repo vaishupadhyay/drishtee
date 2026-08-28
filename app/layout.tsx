@@ -31,7 +31,7 @@ const tamil = Noto_Sans_Tamil({
 });
 
 export const metadata: Metadata = {
-  title: "Drishtee — Scan, Report & Track Civic Issues",
+  title: "Drishtee | Scan, Report & Track Civic Issues",
   description:
     "See a public-service problem? Scan it. Drishtee helps identify the issue, location, department and prepares a grievance you can review.",
 };

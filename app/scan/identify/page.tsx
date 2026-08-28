@@ -38,7 +38,7 @@ export default function IdentifyPage() {
             );
           })}
         </div>
-        <button className="mt-4 text-sm text-ink-3 underline underline-offset-4">None of these — search manually</button>
+        <button className="mt-4 text-sm text-ink-3 underline underline-offset-4">None of these. Search manually.</button>
         <button disabled={!chosen} className="touch mt-6 w-full rounded-[var(--r-sm)] bg-seal px-4 py-3 font-medium text-paper disabled:cursor-not-allowed disabled:opacity-40 active:scale-[0.98]">{chosen ? `Confirm ${chosen.name}` : "Choose a location to continue"}</button>
         <p className="mt-5 text-center text-xs leading-relaxed text-ink-4">Independent hackathon prototype. Not affiliated with or endorsed by any government body.</p>
       </div>

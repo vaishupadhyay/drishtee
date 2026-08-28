@@ -31,13 +31,13 @@ const tamil = Noto_Sans_Tamil({
 });
 
 export const metadata: Metadata = {
-  title: "Scan & Report — a proposed public grievance tool",
+  title: "Drishtee — Scan, Report & Track Civic Issues",
   description:
-    "Point your phone at the office where the problem happened. Independent hackathon prototype, not affiliated with any government body.",
+    "See a public-service problem? Scan it. Drishtee helps identify the issue, location, department and prepares a grievance you can review.",
 };
 
 export const viewport: Viewport = {
-  themeColor: "#6D1B3E",
+  themeColor: "#0B1F3D",
   width: "device-width",
   initialScale: 1,
 };

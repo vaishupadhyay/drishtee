@@ -209,7 +209,14 @@ button {
   clip: rect(0 0 0 0); white-space: nowrap; border: 0;
 }
 
-html[data-assist-text-size="large"] .assist-screen { font-size: 17px; }
-html[data-assist-text-size="extra-large"] .assist-screen { font-size: 19px; }
+html.text-scale-large { --text-body: var(--text-body-lg); --text-label: 17px; --text-title: 27px; }
+html.text-scale-extra-large { --text-body: 19px; --text-label: 19px; --text-title: 30px; }
 
 body[data-mobile-preview="true"] .app-frame { max-width: 430px; margin-inline: auto; overflow: hidden; border-inline: 1px solid var(--assist-line); box-shadow: 0 0 0 10px var(--surface-2), 0 22px 54px rgb(11 31 61 / 18%); }
+
+/* Shared Drishtee Assist depth system. */
+:root { --elev-0:none; --elev-1:0 1px 2px rgba(11,31,61,.06),0 1px 1px rgba(11,31,61,.04); --elev-2:0 4px 12px rgba(11,31,61,.08),0 2px 4px rgba(11,31,61,.04); --elev-3:0 12px 32px rgba(11,31,61,.14),0 4px 8px rgba(11,31,61,.06); --text-micro:12px; --text-body:15px; --text-body-lg:17px; --text-label:15px; --text-title:21px; --text-display:clamp(27px,3vw,34px); --ease-settle:cubic-bezier(.2,0,.1,1); --ease-reveal:cubic-bezier(.16,1,.3,1); }
+.assist-card { border:1px solid var(--rule); border-radius:var(--r-lg); background:var(--card); box-shadow:var(--elev-1); padding:20px; transition:box-shadow 200ms var(--ease-settle),border-color 200ms var(--ease-settle),transform 200ms var(--ease-settle); }
+.assist-card:hover,.assist-card:focus-within { border-color:transparent; box-shadow:var(--elev-2); }.assist-card--active { border-color:transparent; box-shadow:var(--elev-3); }.assist-micro { font-size:var(--text-micro); font-weight:500; letter-spacing:.02em; }.assist-body { font-size:var(--text-body); }.assist-label { font-size:var(--text-label); font-weight:600; }.assist-title { font-size:var(--text-title); font-weight:500; letter-spacing:-.01em; }.assist-display { font-size:var(--text-display); font-weight:500; letter-spacing:-.015em; }
+.assist-card--flush { box-shadow:var(--elev-0); }.assist-button { min-height:48px; border-radius:12px; font-size:var(--text-label); font-weight:600; transition:transform 120ms var(--ease-settle),box-shadow 200ms var(--ease-settle); }.assist-button:active { transform:translateY(1px); }.assist-button-primary { background:var(--navy); color:white; box-shadow:var(--elev-1); }.assist-button-primary:hover { box-shadow:var(--elev-2); }.assist-link { color:var(--assist-blue); text-decoration:underline; text-underline-offset:4px; font-size:var(--text-body); font-weight:600; }.assist-status-note { border-left:3px solid var(--assist-blue); background:var(--sky); padding:12px 14px; border-radius:0 var(--r-sm) var(--r-sm) 0; font-size:var(--text-body); }
+@media (max-width:374px) { .assist-card { padding:16px; } } @media (prefers-reduced-motion:reduce) { .assist-card { transition:none; } }

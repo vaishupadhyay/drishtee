@@ -3,31 +3,24 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { defaultAccessibilityPreferences, type AccessibilityPreferences, type TextSize } from "@/lib/accessibility/preferences";
-
-const storageKey = "drishtee-assist-preferences";
+import { readAssistSession, updatePreferences } from "@/lib/assist/session";
+import { AssistIcon } from "@/components/assist/icons";
 
 export function AccessibilityPanel() {
   const [open, setOpen] = useState(false);
   const [preferences, setPreferences] = useState<AccessibilityPreferences>(defaultAccessibilityPreferences);
 
-  useEffect(() => {
-    const stored = window.sessionStorage.getItem(storageKey);
-    if (stored) setPreferences({ ...defaultAccessibilityPreferences, ...JSON.parse(stored) });
-  }, []);
-
-  useEffect(() => {
-    document.documentElement.dataset.assistTextSize = preferences.textSize;
-    window.sessionStorage.setItem(storageKey, JSON.stringify(preferences));
-  }, [preferences]);
+  useEffect(() => { const current = readAssistSession().preferences; setPreferences(current); applySize(current.textSize); }, []);
 
   function update(next: Partial<AccessibilityPreferences>) {
-    setPreferences((current) => ({ ...current, ...next }));
+    setPreferences((current) => { const value = { ...current, ...next }; updatePreferences(value); applySize(value.textSize); return value; });
   }
+  function applySize(size: TextSize) { document.documentElement.classList.remove("text-scale-large", "text-scale-extra-large"); if (size !== "standard") document.documentElement.classList.add(`text-scale-${size}`); }
 
   return <>
-    <button onClick={() => setOpen(true)} className="fixed right-4 top-4 z-30 grid min-h-12 min-w-12 place-items-center rounded-full border border-assist-line bg-white text-lg font-bold text-navy shadow-[0_8px_20px_rgb(11_31_61_/_10%)]" aria-label="Open accessibility preferences">A</button>
+    <button onClick={() => setOpen(true)} className="grid min-h-11 min-w-11 place-items-center rounded-xl border border-assist-line bg-white text-navy" aria-label="Open accessibility preferences"><AssistIcon name="accessibility" width={20} height={20}/></button>
     {open && <div className="fixed inset-0 z-40 bg-navy/35 p-4" role="presentation" onClick={() => setOpen(false)}><aside className="ml-auto h-full w-full max-w-sm overflow-y-auto rounded-2xl bg-surface p-5 text-navy shadow-[0_18px_45px_rgb(11_31_61_/_20%)]" role="dialog" aria-modal="true" aria-label="Accessibility preferences" onClick={(event) => event.stopPropagation()}>
-      <div className="flex items-center justify-between"><div><p className="text-[11px] font-extrabold uppercase tracking-[.12em] text-assist-blue">Drishtee Assist</p><h2 className="mt-1 text-xl font-extrabold">Make this easier to use</h2></div><button onClick={() => setOpen(false)} className="grid min-h-12 min-w-12 place-items-center rounded-full border border-assist-line text-lg" aria-label="Close accessibility preferences">×</button></div>
+      <div className="flex items-center justify-between"><div><p className="text-[11px] font-extrabold uppercase tracking-[.12em] text-assist-blue">Drishtee Assist</p><h2 className="mt-1 text-xl font-extrabold">Make this easier to use</h2></div><button onClick={() => setOpen(false)} className="grid min-h-12 min-w-12 place-items-center rounded-full border border-assist-line text-lg" aria-label="Close accessibility preferences"><AssistIcon name="close"/></button></div>
       <PreferenceSection label="Text size"><div className="grid grid-cols-3 gap-2">{(["standard", "large", "extra-large"] as TextSize[]).map((size) => <button key={size} onClick={() => update({ textSize: size })} className={`min-h-12 rounded-xl border px-2 text-xs font-bold ${preferences.textSize === size ? "border-assist-blue bg-sky text-assist-blue" : "border-assist-line bg-white"}`}>{size === "extra-large" ? "Extra Large" : size[0].toUpperCase() + size.slice(1)}</button>)}</div></PreferenceSection>
       <Toggle label="Simple language" detail="Use shorter, clearer sentences." checked={preferences.simpleLanguage} onChange={(simpleLanguage) => update({ simpleLanguage })} />
       <Toggle label="Ask me fewer questions" detail="Prefer one question at a time." checked={preferences.fewerQuestions} onChange={(fewerQuestions) => update({ fewerQuestions })} />

@@ -14,12 +14,12 @@ type Lang = "en" | "hi" | "ta";
 const T: Record<Lang, Record<string, string>> = {
   en: {
     wordmark: "Scan & Report",
-    kicker: "A proposed module for CPGRAMS",
+    kicker: "A proposed public grievance tool",
     lede: "Point your phone at the place. We'll find the department.",
     scanTitle: "Scan and report",
     scanSub: "Board, counter, notice or token slip",
-    talkTitle: "Talk to file",
-    talkSub: "Just talk. It'll ask what it needs.",
+    talkTitle: "Talk to Chatbot",
+    talkSub: "Start with a template or type what happened.",
     track: "Track a report",
     trackPlaceholder: "Registration number",
     trackGo: "Open",
@@ -31,7 +31,7 @@ const T: Record<Lang, Record<string, string>> = {
     problemEyebrow: "The problem",
     problemTitle: "Eleven fields before you can say what went wrong.",
     problemBody:
-      "To file today you must already know which ministry, department and category owns your problem — and sometimes that CPGRAMS isn't the right portal at all. Provident fund goes to EPFiGMS. Income tax goes to e-Nivaran. Pension goes to CPENGRAMS. Most people find out thirty days later, when their complaint is closed as 'not our subject'.",
+      "To file today you must already know which department and service owns your problem. Most people find out much later that their report was sent to the wrong place.",
     removed: "Removed",
     kept: "What we still ask for",
     changedEyebrow: "What changed",
@@ -44,7 +44,7 @@ const T: Record<Lang, Record<string, string>> = {
   },
   hi: {
     wordmark: "स्कैन और रिपोर्ट",
-    kicker: "CPGRAMS के लिए प्रस्तावित मॉड्यूल",
+    kicker: "सार्वजनिक शिकायत के लिए प्रस्तावित साधन",
     lede: "जहाँ समस्या हुई, वहाँ कैमरा घुमाइए। विभाग हम ढूँढ लेंगे।",
     scanTitle: "स्कैन करके रिपोर्ट करें",
     scanSub: "बोर्ड, काउंटर, सूचना या टोकन पर्ची",
@@ -61,7 +61,7 @@ const T: Record<Lang, Record<string, string>> = {
     problemEyebrow: "समस्या",
     problemTitle: "शिकायत लिखने से पहले ग्यारह खाने।",
     problemBody:
-      "आज शिकायत दर्ज करने के लिए आपको पहले से पता होना चाहिए कि मामला किस मंत्रालय और श्रेणी का है — और कई बार CPGRAMS सही पोर्टल होता ही नहीं। भविष्य निधि EPFiGMS पर, आयकर e-Nivaran पर, पेंशन CPENGRAMS पर।",
+      "आज शिकायत दर्ज करने के लिए आपको पहले से पता होना चाहिए कि मामला किस विभाग और सेवा का है। अक्सर लोगों को बहुत बाद में पता चलता है कि शिकायत गलत जगह भेजी गई थी।",
     removed: "हटाए गए",
     kept: "अब भी ज़रूरी",
     changedEyebrow: "क्या बदला",
@@ -74,7 +74,7 @@ const T: Record<Lang, Record<string, string>> = {
   },
   ta: {
     wordmark: "ஸ்கேன் & புகார்",
-    kicker: "CPGRAMS-க்கான முன்மொழியப்பட்ட பகுதி",
+    kicker: "பொதுப் புகாருக்கான முன்மொழியப்பட்ட கருவி",
     lede: "பிரச்சினை நடந்த இடத்தை நோக்கி கேமராவைக் காட்டுங்கள்.",
     scanTitle: "ஸ்கேன் செய்து புகார் அளியுங்கள்",
     scanSub: "பலகை, கவுண்டர், அறிவிப்பு அல்லது டோக்கன் சீட்டு",
@@ -91,7 +91,7 @@ const T: Record<Lang, Record<string, string>> = {
     problemEyebrow: "பிரச்சினை",
     problemTitle: "புகார் சொல்வதற்கு முன் பதினொரு கட்டங்கள்.",
     problemBody:
-      "இன்று புகார் அளிக்க, எந்த அமைச்சகம் என்பதை நீங்களே தெரிந்திருக்க வேண்டும் — சில நேரம் CPGRAMS சரியான தளமே அல்ல.",
+      "இன்று புகார் அளிக்க, எந்தத் துறை மற்றும் சேவை என்பதை நீங்களே தெரிந்திருக்க வேண்டும். பலருக்கு புகார் தவறான இடத்திற்குச் சென்றது தாமதமாகத்தான் தெரிகிறது.",
     removed: "நீக்கப்பட்டவை",
     kept: "இப்போதும் தேவை",
     changedEyebrow: "என்ன மாறியது",
@@ -424,7 +424,7 @@ export default function Home() {
               },
               {
                 h: "You find out before you waste thirty days",
-                p: "Provident fund belongs on EPFiGMS, income tax on e-Nivaran, pension on CPENGRAMS. If it isn't a CPGRAMS subject, you're told now and handed a pre-composed complaint for the right portal.",
+                p: "The system checks the likely service owner early, so you can choose the right public channel before time is lost.",
               },
               {
                 h: "Eight complaints become one case",
@@ -449,7 +449,7 @@ export default function Home() {
               {[
                 ["Scan", "Point at the board, counter, notice or token slip."],
                 ["Identify", "The office is matched and shown with a confidence score."],
-                ["Route check", "Confirm this belongs on CPGRAMS at all."],
+                ["Service check", "Confirm the right public service owner before filing."],
                 ["Join or describe", "Add your voice to an open report, or speak a new one."],
                 ["Review", "Every field the model produced stays editable. Your words stay yours."],
                 ["File and follow", "Registration number, 30-day SLA, and an appeal if the closure doesn't hold up."],

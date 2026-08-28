@@ -31,7 +31,7 @@ const tamil = Noto_Sans_Tamil({
 });
 
 export const metadata: Metadata = {
-  title: "Scan & Report — a proposed module for CPGRAMS",
+  title: "Scan & Report — a proposed public grievance tool",
   description:
     "Point your phone at the office where the problem happened. Independent hackathon prototype, not affiliated with any government body.",
 };

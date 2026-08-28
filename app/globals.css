@@ -154,6 +154,13 @@ button {
 .anim-stamp { animation: stamp-in var(--dur-stamp) var(--ease-stamp) both; }
 .anim-reticle { animation: reticle-settle var(--dur-stamp) var(--ease-stamp) both; }
 
+@keyframes scan-sweep {
+  from { transform: translateY(-120%); }
+  to { transform: translateY(520%); }
+}
+
+.anim-scan-sweep { animation: scan-sweep 2.4s linear infinite; }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

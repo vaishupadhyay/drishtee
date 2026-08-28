@@ -1,0 +1,23 @@
+import Link from "next/link";
+import { notFound } from "next/navigation";
+
+const content: Record<string, { eyebrow: string; title: string; body: string; action: string; href: string }> = {
+  talk: { eyebrow: "Talk to Chatbot", title: "Start with what you know.", body: "Choose a prompt, type in your own words, or move to Scan and Report when a sign, notice or receipt can help identify the location.", action: "Start Scan and Report", href: "/scan" },
+  auth: { eyebrow: "Sign in", title: "Keep your report connected to you.", body: "Use a mobile number and the demo verification step to save a report, return to it later, and receive understandable progress updates.", action: "Continue to My Grievances", href: "/reports" },
+  reports: { eyebrow: "My Grievances", title: "Track what matters to you.", body: "Your submitted reports and the issues you joined will appear here with plain-language progress, a clear next step, and an option to ask for an explanation.", action: "Report a new issue", href: "/scan" },
+  help: { eyebrow: "Help & Support", title: "Clear help, before you begin.", body: "Find guidance on describing an issue, using a scan, privacy choices, and how to understand the status of a report.", action: "Start a report", href: "/scan" },
+  privacy: { eyebrow: "Privacy", title: "Your information stays in your control.", body: "This independent prototype uses synthetic demonstration data. It is designed to explain each step clearly and never contacts a live public-service system.", action: "Read the help guide", href: "/help" },
+  terms: { eyebrow: "Terms of Use", title: "A prototype for clearer reporting.", body: "Drishtee is an independent hackathon prototype. It demonstrates an assisted reporting experience and does not submit reports to a live public-service system.", action: "Return home", href: "/" },
+  about: { eyebrow: "About Drishtee", title: "A more understandable path from concern to action.", body: "Drishtee explores how flexible inputs, guided explanations and accessible follow-up can help people describe public-service concerns with confidence.", action: "See how it works", href: "/#how" },
+};
+
+export default async function InformationPage({ params }: { params: Promise<{ page: string }> }) {
+  const { page } = await params;
+  const item = content[page];
+  if (!item) notFound();
+
+  const supplemental = page === "reports" ? <section id="track-status" className="mt-8 rounded-2xl border border-assist-line bg-surface p-5"><h2 className="text-lg font-extrabold text-navy">Track a status</h2><p className="mt-2 text-sm leading-6 text-[#617087]">When a report is available, enter its registration number here to see the current stage in plain language.</p></section> : null;
+  const help = page === "help" ? <div className="mt-8 grid gap-4 sm:grid-cols-2"><section id="faqs" className="rounded-2xl border border-assist-line bg-white p-5"><h2 className="font-extrabold text-navy">FAQs</h2><p className="mt-2 text-sm leading-6 text-[#617087]">You can scan a nearby sign or describe the issue yourself. You will always review the details first.</p></section><section id="guidelines" className="rounded-2xl border border-assist-line bg-white p-5"><h2 className="font-extrabold text-navy">Guidelines</h2><p className="mt-2 text-sm leading-6 text-[#617087]">Use your own words, attach only relevant evidence, and avoid sharing sensitive information unless it is necessary.</p></section><section id="language" className="rounded-2xl border border-assist-line bg-white p-5 sm:col-span-2"><h2 className="font-extrabold text-navy">Language and accessibility</h2><p className="mt-2 text-sm leading-6 text-[#617087]">The prototype begins in English and is designed around clear language, readable content and assisted input options.</p></section></div> : null;
+
+  return <main className="min-h-screen bg-surface px-4 py-8 text-navy"><div className="mx-auto max-w-2xl"><Link href="/" className="text-sm font-semibold text-assist-blue underline underline-offset-4">← Back to Drishtee</Link><p className="mt-14 text-[11px] font-extrabold uppercase tracking-[.12em] text-assist-blue">{item.eyebrow}</p><h1 className="mt-3 max-w-[17ch] text-4xl font-semibold tracking-[-.05em]">{item.title}</h1><p className="mt-5 max-w-[60ch] text-[16px] leading-7 text-[#526074]">{item.body}</p>{supplemental}{help}<Link href={item.href} className="mt-8 inline-flex rounded-full bg-navy px-5 py-3 text-sm font-extrabold text-white active:scale-[.98]">{item.action} →</Link><p className="mt-12 text-xs leading-5 text-[#778397]">Independent hackathon prototype. Not affiliated with or endorsed by any government body.</p></div></main>;
+}

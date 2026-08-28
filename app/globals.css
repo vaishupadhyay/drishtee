@@ -208,3 +208,6 @@ button {
   padding: 0; margin: -1px; overflow: hidden;
   clip: rect(0 0 0 0); white-space: nowrap; border: 0;
 }
+
+html[data-assist-text-size="large"] .assist-screen { font-size: 17px; }
+html[data-assist-text-size="extra-large"] .assist-screen { font-size: 19px; }

@@ -211,3 +211,5 @@ button {
 
 html[data-assist-text-size="large"] .assist-screen { font-size: 17px; }
 html[data-assist-text-size="extra-large"] .assist-screen { font-size: 19px; }
+
+body[data-mobile-preview="true"] .app-frame { max-width: 430px; margin-inline: auto; overflow: hidden; border-inline: 1px solid var(--assist-line); box-shadow: 0 0 0 10px var(--surface-2), 0 22px 54px rgb(11 31 61 / 18%); }

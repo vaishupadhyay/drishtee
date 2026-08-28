@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { MobileViewToggle } from "@/components/assist/mobile-view-toggle";
 
 const badges = ["Secure & Private", "Transparent Process", "Timely Action", "Citizen First"];
 const steps = [
@@ -30,21 +31,21 @@ const testimonials = [
 ];
 
 function LogoMark() {
-  return <span className="grid h-10 w-10 place-items-center rounded-full bg-[linear-gradient(135deg,var(--assist-blue),var(--assist-green))] text-white"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12c2.1-3.4 4.8-5.1 8-5.1s5.9 1.7 8 5.1c-2.1 3.4-4.8 5.1-8 5.1S6.1 15.4 4 12Z" stroke="currentColor" strokeWidth="1.8"/><circle cx="12" cy="12" r="2.4" stroke="currentColor" strokeWidth="1.8"/></svg></span>;
+  return <span className="grid h-11 w-11 place-items-center rounded-[15px] bg-[linear-gradient(135deg,var(--assist-blue),var(--assist-green))] text-white shadow-[0_7px_16px_rgb(43_108_176_/_24%)]"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3.5 12c2.3-3.8 5.1-5.7 8.5-5.7s6.2 1.9 8.5 5.7c-2.3 3.8-5.1 5.7-8.5 5.7S5.8 15.8 3.5 12Z" stroke="currentColor" strokeWidth="1.8"/><circle cx="12" cy="12" r="2.2" fill="currentColor"/><path d="M8 12h8" stroke="white" strokeWidth="1.4" strokeLinecap="round"/></svg></span>;
 }
 
 function Brand() {
-  return <span className="flex items-center gap-2.5"><LogoMark /><span><span className="block text-[19px] font-extrabold tracking-[-.04em] text-navy">Drishtee</span><span className="block text-[9px] font-bold uppercase tracking-[.08em] text-[#6B7A8F]">Your Voice. Our Action.</span></span></span>;
+  return <span className="flex items-center gap-2.5"><LogoMark /><span><span className="block text-[20px] font-black tracking-[-.05em] text-navy">Drishtee</span><span className="block text-[9px] font-bold uppercase tracking-[.08em] text-[#6B7A8F]">Your Voice. Our Action.</span></span></span>;
 }
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-surface text-navy">
+    <div className="app-frame min-h-screen bg-surface text-navy">
       <header className="border-b border-assist-line bg-surface/95">
         <div className="mx-auto flex min-h-20 w-[min(1180px,calc(100%-32px))] items-center justify-between gap-4">
           <Link href="/" aria-label="Drishtee home"><Brand /></Link>
           <nav className="hidden items-center gap-5 text-[13px] font-semibold text-[#52637A] lg:flex"><a href="#how">How It Works</a><Link href="/reports">My Grievances</Link><Link href="/reports#track-status">Track Status</Link><Link href="/help">Resources</Link><Link href="/about">About Us</Link></nav>
-          <div className="flex items-center gap-2"><Link href="/help#language" className="hidden rounded-full border border-assist-line bg-white px-3 py-2 text-xs font-bold text-[#45566D] sm:block">English ▾</Link><Link href="/auth" className="hidden rounded-full border border-assist-line bg-white px-3 py-2 text-xs font-bold text-[#45566D] md:block">Login / Sign up</Link><Link href="/scan" className="rounded-full bg-navy px-4 py-2.5 text-xs font-bold text-white transition hover:bg-navy-2 active:scale-[.98]">Report Now</Link></div>
+          <div className="flex items-center gap-2"><MobileViewToggle /><Link href="/help#language" className="hidden rounded-full border border-assist-line bg-white px-3 py-2 text-xs font-bold text-[#45566D] sm:block">English ▾</Link><Link href="/auth/login" className="hidden rounded-full border border-assist-line bg-white px-3 py-2 text-xs font-bold text-[#45566D] md:block">Login / Sign up</Link><Link href="/assist" className="rounded-full bg-navy px-5 py-3 text-xs font-extrabold text-white shadow-[0_8px_18px_rgb(11_31_61_/_20%)] transition hover:bg-navy-2 active:scale-[.98]">Report an issue</Link></div>
         </div>
       </header>
 
@@ -52,19 +53,18 @@ export default function Home() {
         <section className="overflow-hidden py-14 md:py-[74px]">
           <div className="mx-auto grid w-[min(1180px,calc(100%-32px))] items-center gap-12 lg:grid-cols-[1.06fr_.94fr] lg:gap-20">
             <div>
-              <p className="text-[11px] font-extrabold uppercase tracking-[.13em] text-assist-blue">A clearer way to be heard</p>
+              <p className="text-[11px] font-extrabold uppercase tracking-[.13em] text-assist-blue">A simpler way to resolve service issues</p>
               <h1 className="mt-3 max-w-[680px] font-[family-name:var(--font-display)] text-[clamp(42px,5.25vw,68px)] font-semibold leading-[.99] tracking-[-.055em] text-navy">Your voice starts here.<br /><span className="bg-[linear-gradient(100deg,var(--assist-blue),var(--assist-green))] bg-clip-text text-transparent">Change begins here.</span></h1>
-              <p className="mt-5 max-w-[570px] text-[17px] leading-[1.65] text-[#526074]">Drishtee helps you describe a public-service problem in the way that works for you, understand what happens next, and stay connected until it is resolved.</p>
+              <p className="mt-5 max-w-[570px] text-[17px] leading-[1.65] text-[#526074]">Drishtee turns everyday service concerns into clear, complete reports—so the right team can understand the issue, take action, and keep you updated.</p>
               <div className="mt-6 flex flex-wrap gap-2">{badges.map((badge) => <span key={badge} className="inline-flex items-center gap-1.5 rounded-full border border-assist-line bg-white px-2.5 py-1.5 text-[11px] font-bold text-[#43556D]"><span className="text-assist-green">✓</span>{badge}</span>)}</div>
               <div className="mt-7 grid gap-3 sm:grid-cols-2">
                 <Link href="/scan" className="relative min-h-[178px] rounded-[20px] border border-[#CFECD9] bg-mint p-5 transition hover:-translate-y-1 hover:shadow-[0_14px_32px_rgb(23_52_92_/_10%)]"><span className="absolute right-4 top-4 rounded-full bg-white px-2 py-1 text-[10px] font-extrabold text-mint-strong">Recommended</span><span className="grid h-10 w-10 place-items-center rounded-xl bg-mint-strong text-lg text-white">⌁</span><h2 className="mt-4 text-[19px] font-extrabold tracking-[-.025em]">Scan and Report</h2><p className="mt-1 text-xs leading-5 text-[#4E6070]">Show a sign, notice, receipt or counter, then tell us what happened.</p><span className="mt-4 inline-flex rounded-full bg-mint-strong px-2.5 py-1.5 text-[11px] font-extrabold text-white">Start scanning →</span></Link>
                 <Link href="/talk" className="min-h-[178px] rounded-[20px] border border-[#D5E3FA] bg-sky p-5 transition hover:-translate-y-1 hover:shadow-[0_14px_32px_rgb(23_52_92_/_10%)]"><span className="grid h-10 w-10 place-items-center rounded-xl bg-sky-strong text-lg text-white">◌</span><h2 className="mt-4 text-[19px] font-extrabold tracking-[-.025em]">Talk to Chatbot</h2><p className="mt-1 text-xs leading-5 text-[#4E6070]">Start with a guided prompt or type the issue in your own words.</p><span className="mt-4 inline-flex rounded-full bg-sky-strong px-2.5 py-1.5 text-[11px] font-extrabold text-white">Start a chat →</span></Link>
               </div>
             </div>
-            <div className="relative mx-auto min-h-[410px] w-full max-w-[500px] lg:min-h-[545px]">
-              <div className="absolute inset-[10px_0_14px_32px] overflow-hidden rounded-[42%_58%_42%_58%_/_38%_38%_62%_62%] bg-surface-2"><Image src="/drishtee-community.png" alt="People using their phones in a green community space" fill priority sizes="(max-width: 1024px) 500px, 42vw" className="object-cover" /></div>
-              <div className="absolute left-[13%] top-12 w-[62%] rounded-[19px] border border-white/70 bg-white/90 p-5"><p className="text-[11px] font-bold text-[#617087]">Drishtee Assist is listening</p><div className="mt-3 flex h-11 items-center gap-1">{[18,35,24,46,31,52,29,41,22,36,18].map((height, index) => <span key={index} className="w-1.5 rounded-full bg-[linear-gradient(var(--assist-blue),var(--assist-green))]" style={{ height }} />)}</div></div>
-              <div className="absolute bottom-2 right-0 flex w-[min(270px,73%)] items-center gap-3 rounded-2xl border border-assist-line bg-white p-3.5 shadow-[0_14px_35px_rgb(11_31_61_/_13%)]"><span className="grid h-9 w-9 place-items-center rounded-full bg-mint font-bold text-mint-strong">✓</span><span><strong className="block text-[13px]">Real voices. Real impact.</strong><span className="mt-0.5 block text-[11px] leading-4 text-[#637288]">Clearer reports, understandable next steps.</span></span></div>
+            <div className="relative mx-auto min-h-[480px] w-full max-w-[620px] lg:min-h-[640px]">
+              <div className="absolute inset-[4px_0_20px_8px] overflow-hidden rounded-[36%_64%_36%_64%_/_34%_34%_66%_66%] bg-surface-2"><Image src="/drishtee-community.png" alt="People using their phones in a green community space" fill priority sizes="(max-width: 1024px) 620px, 48vw" className="object-cover object-center" /></div>
+              <div className="absolute bottom-0 right-0 flex w-[min(300px,76%)] items-center gap-3 rounded-2xl border border-assist-line bg-white p-4 shadow-[0_14px_35px_rgb(11_31_61_/_13%)]"><span className="grid h-10 w-10 place-items-center rounded-full bg-mint font-bold text-mint-strong">✓</span><span><strong className="block text-[14px]">Real voices. Clear action.</strong><span className="mt-0.5 block text-[11px] leading-4 text-[#637288]">Understandable updates at every step.</span></span></div>
             </div>
           </div>
         </section>

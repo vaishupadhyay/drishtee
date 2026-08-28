@@ -1,502 +1,95 @@
-"use client";
-
-import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 
-/* ===============================================================
-   Strings. Three languages ship; the shape makes adding the other
-   nineteen a data change, not a code change.
-   =============================================================== */
-
-type Lang = "en" | "hi" | "ta";
-
-const T: Record<Lang, Record<string, string>> = {
-  en: {
-    wordmark: "Scan & Report",
-    kicker: "A proposed public grievance tool",
-    lede: "Point your phone at the place. We'll find the department.",
-    scanTitle: "Scan and report",
-    scanSub: "Board, counter, notice or token slip",
-    talkTitle: "Talk to Chatbot",
-    talkSub: "Start with a template or type what happened.",
-    track: "Track a report",
-    trackPlaceholder: "Registration number",
-    trackGo: "Open",
-    trackHelp: "The 16-digit number you got when you filed.",
-    near: "open reports near you",
-    account: "Account",
-    disclaimer:
-      "Independent hackathon prototype. Not affiliated with or endorsed by any government body.",
-    problemEyebrow: "The problem",
-    problemTitle: "Eleven fields before you can say what went wrong.",
-    problemBody:
-      "To file today you must already know which department and service owns your problem. Most people find out much later that their report was sent to the wrong place.",
-    removed: "Removed",
-    kept: "What we still ask for",
-    changedEyebrow: "What changed",
-    howEyebrow: "How it works",
-    realEyebrow: "Honesty",
-    realTitle: "What's real and what's simulated",
-    realBody:
-      "No live government system is contacted. Every integration is a labelled mock, all data is synthetic, and the page below lists exactly what works today.",
-    realCta: "Read what's real",
-  },
-  hi: {
-    wordmark: "स्कैन और रिपोर्ट",
-    kicker: "सार्वजनिक शिकायत के लिए प्रस्तावित साधन",
-    lede: "जहाँ समस्या हुई, वहाँ कैमरा घुमाइए। विभाग हम ढूँढ लेंगे।",
-    scanTitle: "स्कैन करके रिपोर्ट करें",
-    scanSub: "बोर्ड, काउंटर, सूचना या टोकन पर्ची",
-    talkTitle: "बोलकर दर्ज करें",
-    talkSub: "बस बोलिए। बाकी सवाल यह खुद पूछ लेगा।",
-    track: "शिकायत की स्थिति देखें",
-    trackPlaceholder: "पंजीकरण संख्या",
-    trackGo: "खोलें",
-    trackHelp: "दर्ज करते समय मिली 16 अंकों की संख्या।",
-    near: "शिकायतें आपके आसपास खुली हैं",
-    account: "खाता",
-    disclaimer:
-      "स्वतंत्र हैकाथॉन प्रोटोटाइप। किसी सरकारी संस्था से संबद्ध या अनुमोदित नहीं।",
-    problemEyebrow: "समस्या",
-    problemTitle: "शिकायत लिखने से पहले ग्यारह खाने।",
-    problemBody:
-      "आज शिकायत दर्ज करने के लिए आपको पहले से पता होना चाहिए कि मामला किस विभाग और सेवा का है। अक्सर लोगों को बहुत बाद में पता चलता है कि शिकायत गलत जगह भेजी गई थी।",
-    removed: "हटाए गए",
-    kept: "अब भी ज़रूरी",
-    changedEyebrow: "क्या बदला",
-    howEyebrow: "कैसे काम करता है",
-    realEyebrow: "पारदर्शिता",
-    realTitle: "क्या असली है और क्या नकली",
-    realBody:
-      "किसी भी सरकारी सिस्टम से संपर्क नहीं किया जाता। सारा डेटा काल्पनिक है।",
-    realCta: "विवरण पढ़ें",
-  },
-  ta: {
-    wordmark: "ஸ்கேன் & புகார்",
-    kicker: "பொதுப் புகாருக்கான முன்மொழியப்பட்ட கருவி",
-    lede: "பிரச்சினை நடந்த இடத்தை நோக்கி கேமராவைக் காட்டுங்கள்.",
-    scanTitle: "ஸ்கேன் செய்து புகார் அளியுங்கள்",
-    scanSub: "பலகை, கவுண்டர், அறிவிப்பு அல்லது டோக்கன் சீட்டு",
-    talkTitle: "பேசி பதிவு செய்யுங்கள்",
-    talkSub: "பேசுங்கள். மீதியை இது கேட்டுக்கொள்ளும்.",
-    track: "புகாரின் நிலையைப் பாருங்கள்",
-    trackPlaceholder: "பதிவு எண்",
-    trackGo: "திற",
-    trackHelp: "பதிவு செய்தபோது கிடைத்த 16 இலக்க எண்.",
-    near: "புகார்கள் அருகில் நிலுவையில்",
-    account: "கணக்கு",
-    disclaimer:
-      "சுயேச்சையான ஹேக்கத்தான் முன்மாதிரி. எந்த அரசு அமைப்புடனும் தொடர்பில்லை.",
-    problemEyebrow: "பிரச்சினை",
-    problemTitle: "புகார் சொல்வதற்கு முன் பதினொரு கட்டங்கள்.",
-    problemBody:
-      "இன்று புகார் அளிக்க, எந்தத் துறை மற்றும் சேவை என்பதை நீங்களே தெரிந்திருக்க வேண்டும். பலருக்கு புகார் தவறான இடத்திற்குச் சென்றது தாமதமாகத்தான் தெரிகிறது.",
-    removed: "நீக்கப்பட்டவை",
-    kept: "இப்போதும் தேவை",
-    changedEyebrow: "என்ன மாறியது",
-    howEyebrow: "எப்படி வேலை செய்கிறது",
-    realEyebrow: "வெளிப்படைத்தன்மை",
-    realTitle: "எது உண்மை, எது உருவகம்",
-    realBody: "எந்த அரசு அமைப்புடனும் தொடர்பு கொள்ளப்படவில்லை.",
-    realCta: "விவரம் படிக்க",
-  },
-};
-
-const LANGS: { code: Lang; label: string }[] = [
-  { code: "en", label: "English" },
-  { code: "hi", label: "हिन्दी" },
-  { code: "ta", label: "தமிழ்" },
+const badges = ["Secure & Private", "Transparent Process", "Timely Action", "Citizen First"];
+const steps = [
+  ["Capture / Chat", "Scan or describe the issue in your own words."],
+  ["We Understand", "AI extracts details and suggests the right category and department."],
+  ["You Review", "Review, edit if needed, and confirm the details."],
+  ["Submit", "Your grievance is submitted securely."],
+  ["Track & Update", "Track status and get updates in real time."],
+];
+const layers = [
+  ["Input flexibility", "Speak · Scan · Type · Upload"],
+  ["AI understanding", "Location · Department · Service · Issue nature · Urgency · Access barriers"],
+  ["Adaptive experience", "Language complexity · Questions · Text size · Interaction · Explanations"],
+  ["Assisted completion", "Trusted Helper Mode · Caregiver support · Guided drafting · Read aloud"],
+  ["Understandable follow-up", "Plain-language status · Voice updates · Explain this response · Solved / Not Solved"],
+];
+const why = [
+  ["Faster Reporting", "Start in the way that feels easiest, then let the system organise the details."],
+  ["Better Accountability", "A clearer report helps the right service owner understand what needs attention."],
+  ["Stronger Communities", "See an ongoing issue and add your voice instead of starting from zero."],
+  ["For Every Citizen", "Flexible language and assistance options keep the process open to more people."],
+  ["Accessible for All", "Adjustable text, plain explanations and read-aloud support make every step easier."],
+];
+const testimonials = [
+  ["It made a complicated process feel like one clear conversation.", "Priya S.", "Fictional teacher persona"],
+  ["I could explain the issue in my own words and check every detail before filing.", "Ravi A.", "Fictional shopkeeper persona"],
+  ["The simple status updates helped me understand what was happening next.", "Meera N.", "Fictional caregiver persona"],
 ];
 
-/* ===============================================================
-   Icons — inline so the page has no dependencies
-   =============================================================== */
+function LogoMark() {
+  return <span className="grid h-10 w-10 place-items-center rounded-full bg-[linear-gradient(135deg,var(--assist-blue),var(--assist-green))] text-white"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12c2.1-3.4 4.8-5.1 8-5.1s5.9 1.7 8 5.1c-2.1 3.4-4.8 5.1-8 5.1S6.1 15.4 4 12Z" stroke="currentColor" strokeWidth="1.8"/><circle cx="12" cy="12" r="2.4" stroke="currentColor" strokeWidth="1.8"/></svg></span>;
+}
 
-const Viewfinder = ({ tight }: { tight: boolean }) => (
-  <svg viewBox="0 0 24 24" width="26" height="26" fill="none" aria-hidden="true">
-    <g
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      style={{
-        transform: tight ? "scale(0.9)" : "scale(1)",
-        transformOrigin: "center",
-        transition: "transform var(--dur-base) var(--ease)",
-      }}
-    >
-      <path d="M3 8V5a2 2 0 0 1 2-2h3" />
-      <path d="M16 3h3a2 2 0 0 1 2 2v3" />
-      <path d="M21 16v3a2 2 0 0 1-2 2h-3" />
-      <path d="M8 21H5a2 2 0 0 1-2-2v-3" />
-    </g>
-    <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.8" />
-  </svg>
-);
-
-const Mic = () => (
-  <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
-    <rect x="9" y="2.5" width="6" height="11" rx="3" />
-    <path d="M5 11a7 7 0 0 0 14 0" />
-    <path d="M12 18v3.5" />
-  </svg>
-);
-
-const Chevron = ({ dir = "right" }: { dir?: "right" | "down" }) => (
-  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"
-    style={{ transform: dir === "down" ? "rotate(90deg)" : "none", transition: "transform var(--dur-base) var(--ease)" }}>
-    <path d="M9 5l7 7-7 7" />
-  </svg>
-);
-
-const Pin = () => (
-  <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-    <path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11Z" />
-    <circle cx="12" cy="10" r="2.4" />
-  </svg>
-);
-
-const Search = () => (
-  <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
-    <circle cx="11" cy="11" r="6.5" />
-    <path d="M16 16l4.5 4.5" />
-  </svg>
-);
-
-const User = () => (
-  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
-    <circle cx="12" cy="8.5" r="3.5" />
-    <path d="M5 20a7 7 0 0 1 14 0" strokeLinecap="round" />
-  </svg>
-);
-
-/* ===============================================================
-   Page
-   =============================================================== */
-
-const OLD_FIELDS = [
-  "Gender", "Premise number", "Locality", "Sub-locality",
-  "Country", "State", "District", "Pincode",
-  "Phone number", "E-mail address", "Security code",
-];
-const NEW_FIELDS = ["Name", "Mobile number", "Location permission"];
+function Brand() {
+  return <span className="flex items-center gap-2.5"><LogoMark /><span><span className="block text-[19px] font-extrabold tracking-[-.04em] text-navy">Drishtee</span><span className="block text-[9px] font-bold uppercase tracking-[.08em] text-[#6B7A8F]">Your Voice. Our Action.</span></span></span>;
+}
 
 export default function Home() {
-  const [lang, setLang] = useState<Lang>("en");
-  const [trackOpen, setTrackOpen] = useState(false);
-  const [ref, setRef] = useState("");
-  const [refError, setRefError] = useState("");
-  const [hover, setHover] = useState<"scan" | "talk" | null>(null);
-  const router = useRouter();
-
-  const t = T[lang];
-  const scriptClass =
-    lang === "hi" ? "font-[family-name:var(--font-deva)]"
-    : lang === "ta" ? "font-[family-name:var(--font-tamil)]"
-    : "";
-
-  function openReport() {
-    const clean = ref.replace(/\s/g, "");
-    if (!clean) { setRefError("Enter a registration number first."); return; }
-    setRefError("");
-    router.push(`/reports/${encodeURIComponent(clean)}`);
-  }
-
   return (
-    <div className={scriptClass}>
-      {/* ---------------- Header ---------------- */}
-      <header className="bg-seal text-paper">
-        <div className="mx-auto flex max-w-[1080px] items-center justify-between gap-4 px-4 py-3">
-          <div className="min-w-0">
-            <p className="font-[family-name:var(--font-display)] text-[15px] font-medium tracking-[0.02em]">
-              {t.wordmark}
-            </p>
-            <p className="truncate text-[11px] text-paper/70">{t.kicker}</p>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <div role="group" aria-label="Language" className="flex rounded-[var(--r-pill)] border border-paper/25 p-[2px]">
-              {LANGS.map((l) => (
-                <button
-                  key={l.code}
-                  onClick={() => setLang(l.code)}
-                  aria-pressed={lang === l.code}
-                  className={`rounded-[var(--r-pill)] px-2.5 py-1 text-[12px] transition-colors duration-[var(--dur-quick)] ${
-                    lang === l.code ? "bg-paper text-seal" : "text-paper/85 hover:bg-paper/10"
-                  }`}
-                >
-                  {l.label}
-                </button>
-              ))}
-            </div>
-            <Link
-              href="/auth"
-              aria-label={t.account}
-              className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-paper/10"
-            >
-              <User />
-            </Link>
-          </div>
+    <div className="min-h-screen bg-surface text-navy">
+      <header className="border-b border-assist-line bg-surface/95">
+        <div className="mx-auto flex min-h-20 w-[min(1180px,calc(100%-32px))] items-center justify-between gap-4">
+          <Link href="/" aria-label="Drishtee home"><Brand /></Link>
+          <nav className="hidden items-center gap-5 text-[13px] font-semibold text-[#52637A] lg:flex"><a href="#how">How It Works</a><a href="#assist">My Grievances</a><a href="#track">Track Status</a><a href="#resources">Resources</a><a href="#about">About Us</a></nav>
+          <div className="flex items-center gap-2"><button className="hidden rounded-full border border-assist-line bg-white px-3 py-2 text-xs font-bold text-[#45566D] sm:block">English ▾</button><Link href="/auth" className="hidden rounded-full border border-assist-line bg-white px-3 py-2 text-xs font-bold text-[#45566D] md:block">Login / Sign up</Link><Link href="/scan" className="rounded-full bg-navy px-4 py-2.5 text-xs font-bold text-white transition hover:bg-navy-2 active:scale-[.98]">Report Now</Link></div>
         </div>
       </header>
 
-      <main id="main">
-        {/* ---------------- Above the fold: the two options ---------------- */}
-        <section className="mx-auto max-w-[1080px] px-4 pt-5 pb-8">
-          <p className="mb-4 max-w-[46ch] text-[15px] leading-[1.5] text-ink-2 md:text-[17px]">
-            {t.lede}
-          </p>
-
-          <div className="grid gap-3 md:grid-cols-2 md:gap-4">
-            {/* Scan */}
-            <Link
-              href="/scan"
-              prefetch
-              onMouseEnter={() => setHover("scan")}
-              onMouseLeave={() => setHover(null)}
-              onFocus={() => setHover("scan")}
-              onBlur={() => setHover(null)}
-              className="group flex items-center gap-3 rounded-[var(--r-md)] border border-rule bg-card p-4 transition-colors duration-[var(--dur-base)] hover:border-rule-strong md:min-h-[112px] md:p-5"
-            >
-              <span className="flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-[var(--r-md)] bg-stamp text-white md:h-[54px] md:w-[54px]">
-                <Viewfinder tight={hover === "scan"} />
-              </span>
-              <span className="min-w-0 flex-1">
-                <span className="block font-[family-name:var(--font-display)] text-[17px] font-medium md:text-[21px]">
-                  {t.scanTitle}
-                </span>
-                <span className="block text-[13px] leading-[1.4] text-ink-3 md:text-[14px]">
-                  {t.scanSub}
-                </span>
-              </span>
-              <span className="text-ink-4 transition-transform duration-[var(--dur-base)] group-hover:translate-x-0.5">
-                <Chevron />
-              </span>
-            </Link>
-
-            {/* Talk */}
-            <Link
-              href="/talk"
-              prefetch
-              onMouseEnter={() => setHover("talk")}
-              onMouseLeave={() => setHover(null)}
-              onFocus={() => setHover("talk")}
-              onBlur={() => setHover(null)}
-              className="group flex items-center gap-3 rounded-[var(--r-md)] border border-rule bg-card p-4 transition-colors duration-[var(--dur-base)] hover:border-rule-strong md:min-h-[112px] md:p-5"
-            >
-              <span className="flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-[var(--r-md)] bg-seal text-white md:h-[54px] md:w-[54px]">
-                <Mic />
-              </span>
-              <span className="min-w-0 flex-1">
-                <span className="block font-[family-name:var(--font-display)] text-[17px] font-medium md:text-[21px]">
-                  {t.talkTitle}
-                </span>
-                <span className="block text-[13px] leading-[1.4] text-ink-3 md:text-[14px]">
-                  {t.talkSub}
-                </span>
-              </span>
-              <span className="text-ink-4 transition-transform duration-[var(--dur-base)] group-hover:translate-x-0.5">
-                <Chevron />
-              </span>
-            </Link>
-          </div>
-
-          {/* Track a report — expands inline, never navigates away */}
-          <div className="mt-5 border-t border-rule pt-1">
-            <button
-              onClick={() => setTrackOpen((v) => !v)}
-              aria-expanded={trackOpen}
-              aria-controls="track-panel"
-              className="touch flex w-full items-center gap-2 py-2 text-left"
-            >
-              <span className="text-ink-3"><Search /></span>
-              <span className="text-[14px] text-ink-2">{t.track}</span>
-              <span className="ml-auto text-ink-4">
-                <Chevron dir={trackOpen ? "down" : "right"} />
-              </span>
-            </button>
-
-            {trackOpen && (
-              <div id="track-panel" className="pb-3">
-                <div className="flex gap-2">
-                  <input
-                    value={ref}
-                    onChange={(e) => { setRef(e.target.value); if (refError) setRefError(""); }}
-                    onKeyDown={(e) => e.key === "Enter" && openReport()}
-                    placeholder={t.trackPlaceholder}
-                    inputMode="numeric"
-                    aria-label={t.trackPlaceholder}
-                    aria-invalid={!!refError}
-                    className="h-11 min-w-0 flex-1 rounded-[var(--r-sm)] border border-rule bg-card px-3 text-[15px] outline-none focus:border-stamp"
-                  />
-                  <button
-                    onClick={openReport}
-                    className="h-11 shrink-0 rounded-[var(--r-sm)] bg-ink px-4 text-[14px] font-medium text-paper transition-transform duration-[var(--dur-quick)] active:scale-[0.98]"
-                  >
-                    {t.trackGo}
-                  </button>
-                </div>
-                <p className={`mt-1.5 text-[12px] ${refError ? "text-alert" : "text-ink-4"}`}>
-                  {refError || t.trackHelp}
-                </p>
-              </div>
-            )}
-          </div>
-
-          {/* Near me */}
-          <Link
-            href="/near-me"
-            className="touch mt-2 flex items-center gap-2.5 rounded-[var(--r-sm)] bg-paper-2 px-3 py-2.5"
-          >
-            <span className="text-seal"><Pin /></span>
-            <span className="text-[13px] text-ink-2">
-              <span className="font-medium">14</span> {t.near}
-            </span>
-            <span className="ml-auto text-ink-3"><Chevron /></span>
-          </Link>
-
-          <p className="mt-5 text-center text-[11px] leading-relaxed text-ink-4">
-            {t.disclaimer}
-          </p>
-        </section>
-
-        {/* ================= Below the fold: for reviewers ================= */}
-
-        <div className="border-t border-rule bg-card">
-          <div className="mx-auto max-w-[1080px] px-4 py-10 md:py-14">
-            <p className="mb-2 text-[12px] uppercase tracking-[0.12em] text-stamp">
-              {t.problemEyebrow}
-            </p>
-            <h2 className="max-w-[22ch] text-ink">{t.problemTitle}</h2>
-            <p className="mt-3 max-w-[68ch] text-[15px] leading-[1.65] text-ink-2">
-              {t.problemBody}
-            </p>
-
-            <div className="mt-7 grid gap-6 md:grid-cols-[1.4fr_1fr]">
-              <div>
-                <p className="mb-2.5 text-[12px] font-medium uppercase tracking-[0.1em] text-ink-4">
-                  {t.removed}
-                </p>
-                <ul className="flex flex-wrap gap-1.5">
-                  {OLD_FIELDS.map((f) => (
-                    <li
-                      key={f}
-                      className="rounded-[var(--r-pill)] border border-rule px-2.5 py-1 text-[13px] text-ink-4 line-through decoration-alert/70 decoration-[1.5px]"
-                    >
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <p className="mb-2.5 text-[12px] font-medium uppercase tracking-[0.1em] text-ink-4">
-                  {t.kept}
-                </p>
-                <ul className="flex flex-wrap gap-1.5">
-                  {NEW_FIELDS.map((f) => (
-                    <li
-                      key={f}
-                      className="rounded-[var(--r-pill)] border border-verify/35 bg-verify-tint px-2.5 py-1 text-[13px] font-medium text-verify"
-                    >
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-                <p className="mt-3 text-[13px] leading-[1.55] text-ink-3">
-                  Address, district, state and pincode are derived from the location
-                  permission and stay editable. The captcha is replaced by rate limiting.
-                </p>
+      <main>
+        <section className="overflow-hidden py-14 md:py-[74px]">
+          <div className="mx-auto grid w-[min(1180px,calc(100%-32px))] items-center gap-12 lg:grid-cols-[1.06fr_.94fr] lg:gap-20">
+            <div>
+              <p className="text-[11px] font-extrabold uppercase tracking-[.13em] text-assist-blue">A clearer way to be heard</p>
+              <h1 className="mt-3 max-w-[680px] font-[family-name:var(--font-display)] text-[clamp(42px,5.25vw,68px)] font-semibold leading-[.99] tracking-[-.055em] text-navy">Your voice starts here.<br /><span className="bg-[linear-gradient(100deg,var(--assist-blue),var(--assist-green))] bg-clip-text text-transparent">Change begins here.</span></h1>
+              <p className="mt-5 max-w-[570px] text-[17px] leading-[1.65] text-[#526074]">Drishtee helps you describe a public-service problem in the way that works for you, understand what happens next, and stay connected until it is resolved.</p>
+              <div className="mt-6 flex flex-wrap gap-2">{badges.map((badge) => <span key={badge} className="inline-flex items-center gap-1.5 rounded-full border border-assist-line bg-white px-2.5 py-1.5 text-[11px] font-bold text-[#43556D]"><span className="text-assist-green">✓</span>{badge}</span>)}</div>
+              <div className="mt-7 grid gap-3 sm:grid-cols-2">
+                <Link href="/scan" className="relative min-h-[178px] rounded-[20px] border border-[#CFECD9] bg-mint p-5 transition hover:-translate-y-1 hover:shadow-[0_14px_32px_rgb(23_52_92_/_10%)]"><span className="absolute right-4 top-4 rounded-full bg-white px-2 py-1 text-[10px] font-extrabold text-mint-strong">Recommended</span><span className="grid h-10 w-10 place-items-center rounded-xl bg-mint-strong text-lg text-white">⌁</span><h2 className="mt-4 text-[19px] font-extrabold tracking-[-.025em]">Scan and Report</h2><p className="mt-1 text-xs leading-5 text-[#4E6070]">Show a sign, notice, receipt or counter, then tell us what happened.</p><span className="mt-4 inline-flex rounded-full bg-mint-strong px-2.5 py-1.5 text-[11px] font-extrabold text-white">Start scanning →</span></Link>
+                <Link href="/talk" className="min-h-[178px] rounded-[20px] border border-[#D5E3FA] bg-sky p-5 transition hover:-translate-y-1 hover:shadow-[0_14px_32px_rgb(23_52_92_/_10%)]"><span className="grid h-10 w-10 place-items-center rounded-xl bg-sky-strong text-lg text-white">◌</span><h2 className="mt-4 text-[19px] font-extrabold tracking-[-.025em]">Talk to Chatbot</h2><p className="mt-1 text-xs leading-5 text-[#4E6070]">Start with a guided prompt or type the issue in your own words.</p><span className="mt-4 inline-flex rounded-full bg-sky-strong px-2.5 py-1.5 text-[11px] font-extrabold text-white">Start a chat →</span></Link>
               </div>
             </div>
+            <div className="relative mx-auto min-h-[410px] w-full max-w-[500px] lg:min-h-[545px]">
+              <div className="absolute inset-[10px_0_14px_32px] overflow-hidden rounded-[42%_58%_42%_58%_/_38%_38%_62%_62%] bg-[linear-gradient(145deg,#DDEBFC,#DFF4E6)]"><div className="absolute left-1/2 top-[72px] h-[310px] w-[310px] -translate-x-1/2 rotate-[-18deg] rounded-[46%_54%_49%_51%] bg-[linear-gradient(155deg,var(--assist-blue),var(--assist-green))] opacity-90" /><div className="absolute bottom-[-62px] right-7 h-[260px] w-[240px] rotate-[18deg] rounded-[48%_48%_8px_8px] bg-[#F6D4B3] opacity-80" /></div>
+              <div className="absolute left-[13%] top-12 w-[62%] rounded-[19px] border border-white/70 bg-white/90 p-5"><p className="text-[11px] font-bold text-[#617087]">Drishtee Assist is listening</p><div className="mt-3 flex h-11 items-center gap-1">{[18,35,24,46,31,52,29,41,22,36,18].map((height, index) => <span key={index} className="w-1.5 rounded-full bg-[linear-gradient(var(--assist-blue),var(--assist-green))]" style={{ height }} />)}</div></div>
+              <div className="absolute bottom-2 right-0 flex w-[min(270px,73%)] items-center gap-3 rounded-2xl border border-assist-line bg-white p-3.5 shadow-[0_14px_35px_rgb(11_31_61_/_13%)]"><span className="grid h-9 w-9 place-items-center rounded-full bg-mint font-bold text-mint-strong">✓</span><span><strong className="block text-[13px]">Real voices. Real impact.</strong><span className="mt-0.5 block text-[11px] leading-4 text-[#637288]">Clearer reports, understandable next steps.</span></span></div>
+            </div>
           </div>
-        </div>
+        </section>
 
-        {/* What changed */}
-        <div className="mx-auto max-w-[1080px] px-4 py-10 md:py-14">
-          <p className="mb-2 text-[12px] uppercase tracking-[0.12em] text-stamp">
-            {t.changedEyebrow}
-          </p>
-          <div className="mt-4 grid gap-4 md:grid-cols-3">
-            {[
-              {
-                h: "You don't pick the department",
-                p: "A vision model reads the board, cross-checks the service point directory and your location, and tells you which office it found — with its confidence and the reason for it.",
-              },
-              {
-                h: "You find out before you waste thirty days",
-                p: "The system checks the likely service owner early, so you can choose the right public channel before time is lost.",
-              },
-              {
-                h: "Eight complaints become one case",
-                p: "If someone already reported the same counter, you add your voice in one tap and get notified when it's resolved — instead of filing a ninth ticket nobody connects.",
-              },
-            ].map((c) => (
-              <div key={c.h} className="rounded-[var(--r-md)] border border-rule bg-card p-4">
-                <h3 className="mb-1.5">{c.h}</h3>
-                <p className="text-[14px] leading-[1.6] text-ink-2">{c.p}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+        <section id="how" className="border-y border-assist-line bg-white py-16 md:py-20"><div className="mx-auto w-[min(1180px,calc(100%-32px))]"><SectionTitle eyebrow="How it works" title="From what happened to what happens next." body="One connected journey, with you in control of every detail before it is filed." /><div className="mt-11 grid gap-5 md:grid-cols-5">{steps.map(([title, body], index) => <article className="text-center" key={title}><span className="mx-auto grid h-12 w-12 place-items-center rounded-full border border-[#BFD3ED] bg-sky text-sm font-extrabold text-assist-blue">0{index + 1}</span><h3 className="mt-4 text-[15px] font-extrabold">{title}</h3><p className="mx-auto mt-2 max-w-[175px] text-xs leading-5 text-[#657389]">{body}</p></article>)}</div></div></section>
 
-        {/* How it works — numbered because it genuinely is a sequence */}
-        <div className="border-y border-rule bg-paper-2">
-          <div className="mx-auto max-w-[1080px] px-4 py-10 md:py-14">
-            <p className="mb-5 text-[12px] uppercase tracking-[0.12em] text-stamp">
-              {t.howEyebrow}
-            </p>
-            <ol className="grid gap-x-8 gap-y-4 md:grid-cols-2">
-              {[
-                ["Scan", "Point at the board, counter, notice or token slip."],
-                ["Identify", "The office is matched and shown with a confidence score."],
-                ["Service check", "Confirm the right public service owner before filing."],
-                ["Join or describe", "Add your voice to an open report, or speak a new one."],
-                ["Review", "Every field the model produced stays editable. Your words stay yours."],
-                ["File and follow", "Registration number, 30-day SLA, and an appeal if the closure doesn't hold up."],
-              ].map(([h, p], i) => (
-                <li key={h} className="flex gap-3 border-t border-rule pt-3">
-                  <span className="font-[family-name:var(--font-display)] text-[13px] tabular-nums text-stamp">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <span>
-                    <span className="block text-[15px] font-medium">{h}</span>
-                    <span className="block text-[14px] leading-[1.55] text-ink-2">{p}</span>
-                  </span>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </div>
+        <section id="assist" className="py-16 md:py-20"><div className="mx-auto w-[min(1180px,calc(100%-32px))]"><SectionTitle eyebrow="Drishtee Assist" title="Support that adapts to the person, not the form." body="Each layer makes it easier to share what matters and understand the response." /><div className="mt-10 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">{layers.map(([title, body], index) => <article className="min-h-[245px] rounded-2xl border border-assist-line bg-white p-5" key={title}><span className="grid h-7 w-7 place-items-center rounded-full bg-navy text-[11px] font-extrabold text-white">0{index + 1}</span><h3 className="mt-4 text-[16px] font-extrabold leading-5">{title}</h3><p className="mt-3 text-xs leading-5 text-[#617087]">{body}</p></article>)}</div></div></section>
 
-        {/* Honesty band */}
-        <div className="mx-auto max-w-[1080px] px-4 py-10 md:py-14">
-          <div className="rounded-[var(--r-md)] border border-seal/20 bg-seal-tint p-5 md:p-6">
-            <p className="mb-2 text-[12px] uppercase tracking-[0.12em] text-seal">
-              {t.realEyebrow}
-            </p>
-            <h2 className="max-w-[24ch]">{t.realTitle}</h2>
-            <p className="mt-2 max-w-[62ch] text-[14px] leading-[1.6] text-ink-2">
-              {t.realBody}
-            </p>
-            <Link
-              href="/whats-real"
-              className="mt-4 inline-flex items-center gap-1.5 rounded-[var(--r-sm)] bg-seal px-4 py-2.5 text-[14px] font-medium text-paper transition-transform duration-[var(--dur-quick)] active:scale-[0.98]"
-            >
-              {t.realCta} <Chevron />
-            </Link>
-          </div>
-        </div>
+        <section id="track" className="border-y border-assist-line bg-white py-16 md:py-20"><div className="mx-auto w-[min(1180px,calc(100%-32px))]"><SectionTitle eyebrow="Progress at a glance" title="Built around follow-through." /><div className="mt-10 grid overflow-hidden rounded-2xl border border-assist-line bg-surface sm:grid-cols-2 lg:grid-cols-4">{[["1.2M+", "Issues Reported"], ["85%", "Issues Resolved"], ["7.4", "Avg. Days to Resolve"], ["92%", "Citizen Satisfaction"]].map(([value, label]) => <div className="border-b border-assist-line p-6 text-center last:border-b-0 sm:nth-[2]:border-l lg:border-b-0 lg:border-l" key={label}><strong className="block text-[33px] font-extrabold tracking-[-.055em]">{value}</strong><span className="mt-1 block text-xs font-semibold text-[#637288]">{label}</span></div>)}</div><p className="mt-3 text-center text-[11px] text-[#7A8798]">Illustrative figures — demo data</p></div></section>
+
+        <section className="py-16 md:py-20"><div className="mx-auto w-[min(1180px,calc(100%-32px))]"><SectionTitle eyebrow="Why Drishtee" title="Small improvements that make a real difference." /><div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">{why.map(([title, body], index) => <article className="rounded-2xl border border-assist-line bg-white p-6 transition hover:-translate-y-1 hover:shadow-[0_12px_27px_rgb(11_31_61_/_8%)]" key={title}><span className="grid h-10 w-10 place-items-center rounded-xl bg-sky text-lg font-bold text-assist-blue">{["↗", "✓", "◌", "◎", "↔"][index]}</span><h3 className="mt-4 text-[16px] font-extrabold">{title}</h3><p className="mt-2 text-[13px] leading-5 text-[#647287]">{body}</p></article>)}</div><div className="mt-9 flex flex-wrap justify-center gap-2">{["Secure by Design", "Your Data, Your Control", "Privacy First", "Transparent Process"].map((item) => <span key={item} className="rounded-full border border-assist-line bg-white px-3 py-2 text-xs font-bold text-[#43556D]">✓ <span className="ml-1">{item}</span></span>)}</div></div></section>
+
+        <section className="border-y border-assist-line bg-white py-16 md:py-20"><div className="mx-auto w-[min(1180px,calc(100%-32px))]"><SectionTitle eyebrow="Prototype voices" title="Voices that inspire us." body="Illustrative scenarios, created for this prototype." /><div className="mt-10 grid gap-4 md:grid-cols-3">{testimonials.map(([quote, name, role]) => <article className="rounded-2xl border border-assist-line p-6" key={name}><p className="text-[16px] font-semibold leading-6 text-navy">“{quote}”</p><div className="mt-6 flex items-center gap-3"><span className="grid h-9 w-9 place-items-center rounded-full bg-mint text-xs font-extrabold text-mint-strong">{name.slice(0, 1)}</span><span><strong className="block text-xs">{name}</strong><span className="block text-[11px] text-[#778397]">{role}</span></span></div></article>)}</div><div className="mt-5 flex justify-center gap-1.5"><span className="h-1.5 w-5 rounded-full bg-assist-blue" /><span className="h-1.5 w-1.5 rounded-full bg-[#C7D2DF]" /><span className="h-1.5 w-1.5 rounded-full bg-[#C7D2DF]" /></div></div></section>
+
+        <section className="bg-navy py-14 text-white md:py-16"><div className="mx-auto flex w-[min(1180px,calc(100%-32px))] flex-col items-start justify-between gap-7 md:flex-row md:items-center"><div><h2 className="max-w-[650px] text-[clamp(30px,3.6vw,46px)] font-semibold tracking-[-.045em]">Let&apos;s build better communities together.</h2><p className="mt-2 text-[15px] text-[#C8D5E6]">Report. Track. Resolve. Together.</p></div><Link href="/scan" className="rounded-full bg-white px-5 py-3.5 text-[13px] font-extrabold text-navy active:scale-[.98]">Report Now →</Link></div></section>
       </main>
 
-      <footer className="border-t border-rule bg-seal-deep text-paper/85">
-        <div className="mx-auto flex max-w-[1080px] flex-col gap-2 px-4 py-6 text-[12px] md:flex-row md:items-center md:justify-between">
-          <p className="max-w-[60ch] leading-relaxed">{t.disclaimer}</p>
-          <nav className="flex gap-4">
-            <Link href="/whats-real" className="underline underline-offset-2">What&apos;s real</Link>
-            <Link href="/reports">My reports</Link>
-          </nav>
-        </div>
-      </footer>
+      <footer id="resources" className="bg-[#07172D] pt-12 text-[#C8D5E6]"><div className="mx-auto w-[min(1180px,calc(100%-32px))]"><div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr_1.25fr]"><div><Brand /><p className="mt-4 max-w-[255px] text-xs leading-5 text-[#9EB0C7]">A thoughtful, human-centred way to describe, follow and understand public-service concerns.</p></div><FooterColumn title="Quick Links" links={["My Grievances", "Track Status", "How it Works", "Help & Support"]} /><FooterColumn title="Resources" links={["FAQs", "Guidelines", "Privacy Policy", "Terms of Use"]} /><FooterColumn title="About" links={["About Us", "Our Approach", "Impact", "Contact Us"]} /><div id="about"><h3 className="mb-3 text-xs font-extrabold text-white">Stay Connected</h3><div className="flex overflow-hidden rounded-full border border-[#35516F]"><input className="min-w-0 flex-1 bg-transparent px-3 py-2.5 text-[11px] text-white outline-none" placeholder="Email address" aria-label="Email address" type="email" /><button className="bg-assist-green px-3 text-[11px] font-extrabold text-white">Join</button></div><div className="mt-4 flex gap-2"><span className="grid h-7 w-7 place-items-center rounded-full border border-[#35516F] text-[11px] font-bold">in</span><span className="grid h-7 w-7 place-items-center rounded-full border border-[#35516F] text-[11px] font-bold">f</span><span className="grid h-7 w-7 place-items-center rounded-full border border-[#35516F] text-[10px] font-bold">ig</span></div></div></div><p className="mt-10 border-t border-[#203B58] py-5 text-center text-[11px] text-[#8FA3BB]">Independent hackathon prototype. Not affiliated with or endorsed by any government body.</p></div></footer>
     </div>
   );
+}
+
+function SectionTitle({ eyebrow, title, body }: { eyebrow: string; title: string; body?: string }) {
+  return <div className="mx-auto max-w-[670px] text-center"><span className="text-[11px] font-extrabold uppercase tracking-[.12em] text-assist-blue">{eyebrow}</span><h2 className="mt-2 text-[clamp(29px,3.4vw,42px)] font-semibold tracking-[-.045em] text-navy">{title}</h2>{body && <p className="mt-3 text-[15px] leading-6 text-[#617087]">{body}</p>}</div>;
+}
+
+function FooterColumn({ title, links }: { title: string; links: string[] }) {
+  return <div><h3 className="mb-3 text-xs font-extrabold text-white">{title}</h3><ul className="grid gap-2 text-xs text-[#A7B7CA]">{links.map((link) => <li key={link}><a href="#resources">{link}</a></li>)}</ul></div>;
 }

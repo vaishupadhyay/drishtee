@@ -6,6 +6,18 @@
    --------------------------------------------------------------- */
 
 :root {
+  /* Additive tokens for the lighter Drishtee Assist homepage. */
+  --surface: #F8F9FC;
+  --surface-2: #EEF3FA;
+  --navy: #0B1F3D;
+  --navy-2: #17345C;
+  --assist-blue: #2B6CB0;
+  --assist-green: #2F9E5B;
+  --mint: #E9F7EF;
+  --mint-strong: #1DA84C;
+  --sky: #EAF2FE;
+  --sky-strong: #1E5FD9;
+  --assist-line: #DCE5F0;
   /* Core palette */
   --ink:          #1A1614;   /* body text, warm near-black          */
   --ink-2:        #4A4340;   /* secondary text                      */
@@ -52,6 +64,17 @@
 }
 
 @theme inline {
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-navy: var(--navy);
+  --color-navy-2: var(--navy-2);
+  --color-assist-blue: var(--assist-blue);
+  --color-assist-green: var(--assist-green);
+  --color-mint: var(--mint);
+  --color-mint-strong: var(--mint-strong);
+  --color-sky: var(--sky);
+  --color-sky-strong: var(--sky-strong);
+  --color-assist-line: var(--assist-line);
   --color-ink: var(--ink);
   --color-ink-2: var(--ink-2);
   --color-ink-3: var(--ink-3);
